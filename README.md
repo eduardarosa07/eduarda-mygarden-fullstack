@@ -111,4 +111,4 @@ O projeto será desenvolvido utilizando:
 * PostgreSQL
 * HTML
 * CSS
-* JavaScript
+
