@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class EduardaMygardenFullstackApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(EduardaMygardenFullstackApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(EduardaMygardenFullstackApplication.class, args);
+    }
 
 }
