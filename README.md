@@ -1,114 +1,222 @@
-# 🌱 My Garden
+# My Garden — Avaliação N1
 
-> **Pequenos cuidados fazem grandes coisas crescerem.** 🌷
+Projeto full stack de **Desenvolvimento Web II**, organizado para atender ao checklist da N1 e à documentação do My Garden.
 
-O **My Garden** é uma aplicação web de produtividade que transforma tarefas, metas e hábitos em um **jardim virtual**.
+## Tecnologias exigidas na N1
 
-A proposta é tornar a organização das atividades mais leve, visual e motivadora. Conforme o usuário realiza suas tarefas e mantém seus objetivos, seu jardim evolui.
+### Back-end
 
-Cada área da vida pode ser representada por uma planta diferente, permitindo que o usuário acompanhe seu progresso de uma maneira simples e divertida.
+- Spring Boot 4.1.1
+- Maven Wrapper
+- Java 21
+- Pacote base `br.ueg.trindade`
+- Spring Web
+- Spring Data JPA
+- H2
+- PostgreSQL (driver incluído no projeto)
+- DevTools
+- Spring Security
 
----
+O **H2 é o banco ativo nesta etapa**, conforme o checklist. A dependência do PostgreSQL também está presente no `pom.xml`.
 
-## 🌷 Como funciona?
+### Front-end
 
-O usuário cadastra suas tarefas e objetivos e pode organizá-los de acordo com diferentes áreas da vida.
+- React
+- Vite
+- TypeScript
+- Axios
+- Local: `src/main/frontend`
+- Execução: `npm run dev`
 
-Por exemplo:
+## Entidades
 
-```text
-📚 Estudos
-└── Estudar programação 4 vezes por semana
+O projeto possui as entidades definidas para o My Garden:
 
-📖 Leitura
-└── Ler 20 páginas por dia
+- `Usuario`
+- `Permissao`
+- `Secao`
+- `Tarefa`
+- `Planta`
 
-🏃 Saúde
-└── Praticar exercícios 3 vezes por semana
-```
+Para o item **“entidade própria”** do checklist, a entidade utilizada é **Secao**, pois ela faz parte do conceito central do My Garden.
 
-Ao concluir uma tarefa, o usuário recebe **XP**, contribuindo para o crescimento de suas plantas.
+Todas possuem Repository próprio com `JpaRepository`.
 
-```text
-🌰 → 🌱 → 🌿 → 🌷 → 🌳
-```
-
-Quanto maior o progresso, mais desenvolvida fica a planta.
-
----
-
-## 🏡 Meu Jardim
-
-O usuário possui um jardim virtual onde pode acompanhar visualmente seus objetivos.
-
-```text
-╭────────────────────────────────────────────╮
-│              🌱 MEU JARDIM 🌱              │
-│                                            │
-│       🌷          🌻           🌳          │
-│     Leitura      Estudos       Saúde       │
-│       80%          60%           40%       │
-│                                            │
-╰────────────────────────────────────────────╯
-```
-
-Cada planta representa uma área ou objetivo e evolui conforme o usuário progride.
-
----
-
-## 🌱 Exemplo
-
-Imagine que o usuário tenha como objetivo:
-
-> 📖 **Ler 20 páginas por dia**
-
-Ao cadastrar a tarefa, ela poderá valer:
+## Arquitetura do back-end
 
 ```text
-📖 Ler 20 páginas
-+10 XP
+Controller -> Service -> Repository -> H2
 ```
 
-Quando a tarefa for concluída, o XP é adicionado ao progresso do usuário.
-
-Com o passar do tempo:
+Pacotes:
 
 ```text
-🌰 Início
- ↓
-🌱 Primeiros dias
- ↓
-🌿 Progresso
- ↓
-🌷 Meta alcançada
- ↓
-🌳 Grande conquista
+src/main/java/br/ueg/trindade/eduarda_mygarden_fullstack/
+├── config/
+├── controller/
+├── dto/
+├── model/
+├── repository/
+├── service/
+└── util/
 ```
 
-O jardim cresce junto com o usuário.
+Os Controllers recebem as requisições HTTP e chamam apenas os Services. As regras de negócio ficam nos Services.
 
----
+### Regras de negócio presentes
 
-## 🌸 Objetivo
+- Username e e-mail do usuário não podem ser duplicados.
+- A senha é armazenada com hash e está com `@JsonIgnore`, portanto não aparece nas respostas JSON.
+- Ao criar uma seção, uma planta é criada para representar o progresso daquela seção.
+- Ao concluir ou desmarcar tarefas, o progresso e o estágio da planta são recalculados.
 
-O **My Garden** busca unir **produtividade e gamificação**, transformando o acompanhamento de tarefas e objetivos em uma experiência mais visual e agradável.
+## CRUDs exigidos
 
-Em vez de apenas visualizar uma lista de tarefas concluídas, o usuário consegue **ver seu progresso representado no próprio jardim**.
+### Usuario
 
-> 🌱 **Cuide das suas tarefas.**
-> 🌷 **Cultive seus objetivos.**
-> 🌳 **Veja seu jardim crescer.**
+```text
+GET    /api/usuarios
+GET    /api/usuarios/{id}
+POST   /api/usuarios
+PUT    /api/usuarios/{id}
+DELETE /api/usuarios/{id}
+```
 
----
+### Permissao
 
-## 💻 Tecnologias
+```text
+GET    /api/permissoes
+GET    /api/permissoes/{id}
+POST   /api/permissoes
+PUT    /api/permissoes/{id}
+DELETE /api/permissoes/{id}
+```
 
-O projeto será desenvolvido utilizando:
+### Secao — entidade própria
 
-* Java
-* Spring Boot
-* Spring Data JPA
-* PostgreSQL
-* HTML
-* CSS
+```text
+GET    /api/secoes
+GET    /api/secoes/{id}
+POST   /api/secoes
+PUT    /api/secoes/{id}
+DELETE /api/secoes/{id}
+```
 
+Também permanecem as funcionalidades previstas na documentação do My Garden para tarefas e plantas.
+
+## Organização do React
+
+```text
+src/main/frontend/src/
+├── components/
+│   ├── usuario/
+│   │   ├── UsuarioForm.tsx
+│   │   ├── UsuarioItem.tsx
+│   │   └── UsuarioList.tsx
+│   ├── permissao/
+│   │   ├── PermissaoForm.tsx
+│   │   ├── PermissaoItem.tsx
+│   │   └── PermissaoList.tsx
+│   └── secao/
+│       ├── SecaoForm.tsx
+│       ├── SecaoItem.tsx
+│       └── SecaoList.tsx
+├── pages/
+│   ├── UsuariosPage.tsx
+│   ├── PermissoesPage.tsx
+│   ├── SecoesPage.tsx
+│   └── ...
+├── services/
+│   └── api.ts
+├── types/
+├── App.tsx
+└── main.tsx
+```
+
+Os formulários são controlados com `useState` e usam `useEffect` para carregar os dados quando um registro é editado. Os componentes `Item` recebem os dados por **props**. As páginas concentram a lógica de carregar, cadastrar, editar, excluir e recarregar as listas.
+
+O `App.tsx` apenas renderiza a página principal do sistema (`MyGardenPage`).
+
+## Axios e CORS
+
+O Axios está centralizado em:
+
+```text
+src/main/frontend/src/services/api.ts
+```
+
+Base URL:
+
+```text
+http://localhost:8080/api
+```
+
+Os Controllers possuem:
+
+```java
+@CrossOrigin(origins = "http://localhost:5173")
+```
+
+## Banco H2
+
+Configuração em `src/main/resources/application.properties`:
+
+```text
+JDBC URL: jdbc:h2:file:./data/mygarden;AUTO_SERVER=TRUE
+User Name: sa
+Password: vazio
+```
+
+Console:
+
+```text
+http://localhost:8080/h2-console
+```
+
+## Como executar
+
+### 1. Back-end
+
+Na pasta raiz do projeto:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+Aguarde aparecer:
+
+```text
+Started EduardaMygardenFullstackApplication
+```
+
+### 2. Front-end
+
+Abra outro terminal:
+
+```powershell
+cd .\src\main\frontend
+npm install
+npm run dev
+```
+
+Acesse:
+
+```text
+http://localhost:5173
+```
+
+## Ordem para testar o CRUD completo
+
+1. Cadastre uma Permissão.
+2. Edite e exclua uma Permissão de teste.
+3. Cadastre um Usuário.
+4. Edite e exclua um Usuário de teste.
+5. Cadastre um Usuário que será mantido.
+6. Crie uma Seção para esse usuário.
+7. Edite e exclua uma Seção de teste.
+8. Crie uma seção que será mantida.
+9. Cadastre tarefas e marque-as como concluídas para visualizar o progresso da planta.
+
+## GitHub
+
+O repositório Git do projeto original foi preservado. Para o item do checklist referente à entrega, confira `git status`, faça o commit final, envie com `git push` e compartilhe o link do repositório com o professor. O requisito de **commits regulares** depende do histórico feito durante o desenvolvimento e da entrega no GitHub.
