@@ -1,16 +1,28 @@
-package br.ueg.trindade.eduarda_mygarden_fullstack;
+package br.ueg.trindade.eduarda_mygarden_fullstack.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Permissao {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, unique = true, length = 60)
     private String nome;
+
+    @Column(length = 180)
     private String descricao;
 
     public Permissao() {
     }
 
-    public Permissao(Long id, String nome, String descricao) {
-        this.id = id;
+    public Permissao(String nome, String descricao) {
         this.nome = nome;
         this.descricao = descricao;
     }
