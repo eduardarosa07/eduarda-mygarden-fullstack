@@ -1,4 +1,4 @@
-# 🌱 My Garden
+# 🌷 My Garden
 
 O **My Garden** é um sistema web criado para ajudar na organização de tarefas do dia a dia de uma forma mais visual e motivadora.
 
