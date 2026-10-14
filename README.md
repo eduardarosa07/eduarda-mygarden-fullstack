@@ -19,13 +19,7 @@ A ideia principal é separar as tarefas por áreas, como **Estudos, Casa, Trabal
 
 - **Java 21**
 - **Spring Boot**
-- **Spring Data JPA**
 - **H2 Database**
-- **React**
-- **TypeScript**
-- **Vite**
-- **Axios**
-- **Maven**
 
 ## 🌿 Como funciona
 
