@@ -70,7 +70,7 @@ O projeto aplica conceitos de desenvolvimento full stack, APIs REST, persistênc
 
 ## 👩‍💻 Desenvolvido por
 
-**Eduarda Rosa**  
+**Eduarda Protazio**  
 Sistemas de Informação — UEG
 
 <p align="center">
