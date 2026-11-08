@@ -16,7 +16,7 @@ import br.ueg.trindade.eduarda_mygarden_fullstack.model.Permissao;
 import br.ueg.trindade.eduarda_mygarden_fullstack.service.PermissaoService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RequestMapping("/api/permissoes")
 public class PermissaoController {
     private final PermissaoService permissaoService;

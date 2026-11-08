@@ -24,19 +24,21 @@ public class TarefaService {
         this.plantaService = plantaService;
     }
 
-    public List<Tarefa> listarTodos() {
-        return tarefaRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<Tarefa> listarDoUsuario(Long usuarioId) {
+        return tarefaRepository.findAllBySecaoUsuarioIdOrderByDataAscHorarioAsc(usuarioId);
     }
 
-    public Tarefa buscarPorId(Long id) {
-        return tarefaRepository.findById(id)
+    @Transactional(readOnly = true)
+    public Tarefa buscarPorIdDoUsuario(Long id, Long usuarioId) {
+        return tarefaRepository.findByIdAndSecaoUsuarioId(id, usuarioId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarefa não encontrada"));
     }
 
     @Transactional
-    public Tarefa criar(TarefaRequest dados) {
+    public Tarefa criar(TarefaRequest dados, Long usuarioId) {
         validar(dados);
-        Secao secao = secaoService.buscarPorId(dados.getSecaoId());
+        Secao secao = secaoService.buscarPorIdDoUsuario(dados.getSecaoId(), usuarioId);
         Tarefa tarefa = new Tarefa();
         aplicarDados(tarefa, dados, secao);
         tarefa = tarefaRepository.save(tarefa);
@@ -45,11 +47,11 @@ public class TarefaService {
     }
 
     @Transactional
-    public Tarefa atualizar(Long id, TarefaRequest dados) {
+    public Tarefa atualizar(Long id, TarefaRequest dados, Long usuarioId) {
         validar(dados);
-        Tarefa tarefa = buscarPorId(id);
+        Tarefa tarefa = buscarPorIdDoUsuario(id, usuarioId);
         Long secaoAntiga = tarefa.getSecao().getId();
-        Secao secaoNova = secaoService.buscarPorId(dados.getSecaoId());
+        Secao secaoNova = secaoService.buscarPorIdDoUsuario(dados.getSecaoId(), usuarioId);
         aplicarDados(tarefa, dados, secaoNova);
         tarefa = tarefaRepository.save(tarefa);
         plantaService.recalcularPorSecao(secaoAntiga);
@@ -60,8 +62,8 @@ public class TarefaService {
     }
 
     @Transactional
-    public Tarefa definirConclusao(Long id, boolean concluida) {
-        Tarefa tarefa = buscarPorId(id);
+    public Tarefa definirConclusao(Long id, boolean concluida, Long usuarioId) {
+        Tarefa tarefa = buscarPorIdDoUsuario(id, usuarioId);
         tarefa.setConcluida(concluida);
         tarefa = tarefaRepository.save(tarefa);
         plantaService.recalcularPorSecao(tarefa.getSecao().getId());
@@ -69,8 +71,8 @@ public class TarefaService {
     }
 
     @Transactional
-    public void excluir(Long id) {
-        Tarefa tarefa = buscarPorId(id);
+    public void excluir(Long id, Long usuarioId) {
+        Tarefa tarefa = buscarPorIdDoUsuario(id, usuarioId);
         Long secaoId = tarefa.getSecao().getId();
         tarefaRepository.delete(tarefa);
         tarefaRepository.flush();

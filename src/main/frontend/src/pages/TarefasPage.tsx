@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useLocation } from 'react-router-dom'
 import api, { getApiMessage } from '../services/api'
 import type { Secao, Tarefa, TarefaPayload } from '../types'
 import Feedback from '../components/Feedback'
@@ -6,6 +7,8 @@ import Feedback from '../components/Feedback'
 const emptyForm = { titulo: '', descricao: '', data: '', horario: '', secaoId: '' }
 
 export default function TarefasPage() {
+  const location = useLocation()
+  const initialSecaoId = (location.state as { secaoId?: number } | null)?.secaoId ?? null
   const [tarefas, setTarefas] = useState<Tarefa[]>([])
   const [secoes, setSecoes] = useState<Secao[]>([])
   const [form, setForm] = useState(emptyForm)
@@ -24,6 +27,9 @@ export default function TarefasPage() {
     finally { setLoading(false) }
   }
   useEffect(() => { load() }, [])
+  useEffect(() => {
+    if (initialSecaoId && !editingId) setForm((atual) => ({ ...atual, secaoId: String(initialSecaoId) }))
+  }, [initialSecaoId, editingId])
 
   const visible = useMemo(() => tarefas.filter((t) => {
     const q = search.trim().toLowerCase()
@@ -39,7 +45,7 @@ export default function TarefasPage() {
       if (editingId) await api.put(`/tarefas/${editingId}`, payload)
       else await api.post('/tarefas', payload)
       setMessage(editingId ? 'Tarefa atualizada.' : 'Tarefa adicionada ao jardim.')
-      setForm(emptyForm); setEditingId(null); await load()
+      setForm(initialSecaoId ? { ...emptyForm, secaoId: String(initialSecaoId) } : emptyForm); setEditingId(null); await load()
     } catch (err) { setError(getApiMessage(err)) }
   }
 
@@ -76,7 +82,7 @@ export default function TarefasPage() {
           <label className="wide"><span>Descrição</span><input value={form.descricao} onChange={(e) => setForm({ ...form, descricao: e.target.value })} placeholder="Detalhes opcionais" /></label>
           <label><span>Data</span><input type="date" value={form.data} onChange={(e) => setForm({ ...form, data: e.target.value })} /></label>
           <label><span>Horário</span><input type="time" value={form.horario} onChange={(e) => setForm({ ...form, horario: e.target.value })} /></label>
-          <div className="form-actions"><button className="button button-primary" type="submit">{editingId ? 'Salvar alterações' : 'Adicionar tarefa'}</button>{editingId && <button className="button button-ghost" type="button" onClick={() => { setEditingId(null); setForm(emptyForm) }}>Cancelar</button>}</div>
+          <div className="form-actions"><button className="button button-primary" type="submit">{editingId ? 'Salvar alterações' : 'Adicionar tarefa'}</button>{editingId && <button className="button button-ghost" type="button" onClick={() => { setEditingId(null); setForm(initialSecaoId ? { ...emptyForm, secaoId: String(initialSecaoId) } : emptyForm) }}>Cancelar</button>}</div>
         </form>
       </section>
 

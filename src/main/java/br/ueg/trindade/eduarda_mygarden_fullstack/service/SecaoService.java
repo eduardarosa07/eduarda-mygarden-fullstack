@@ -29,19 +29,27 @@ public class SecaoService {
         this.usuarioService = usuarioService;
     }
 
-    public List<Secao> listarTodos() {
-        return secaoRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<Secao> listarDoUsuario(Long usuarioId) {
+        return secaoRepository.findAllByUsuarioIdOrderByIdAsc(usuarioId);
     }
 
+    @Transactional(readOnly = true)
+    public Secao buscarPorIdDoUsuario(Long id, Long usuarioId) {
+        return secaoRepository.findByIdAndUsuarioId(id, usuarioId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seção não encontrada"));
+    }
+
+    @Transactional(readOnly = true)
     public Secao buscarPorId(Long id) {
         return secaoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seção não encontrada"));
     }
 
     @Transactional
-    public Secao criar(SecaoRequest dados) {
+    public Secao criar(SecaoRequest dados, Long usuarioId) {
         validar(dados);
-        Usuario usuario = usuarioService.buscarPorId(dados.getUsuarioId());
+        Usuario usuario = usuarioService.buscarPorId(usuarioId);
 
         Secao secao = new Secao();
         secao.setNome(dados.getNome().trim());
@@ -57,13 +65,12 @@ public class SecaoService {
     }
 
     @Transactional
-    public Secao atualizar(Long id, SecaoRequest dados) {
+    public Secao atualizar(Long id, SecaoRequest dados, Long usuarioId) {
         validar(dados);
 
-        Secao secao = buscarPorId(id);
+        Secao secao = buscarPorIdDoUsuario(id, usuarioId);
         secao.setNome(dados.getNome().trim());
         secao.setDescricao(limpar(dados.getDescricao()));
-        secao.setUsuario(usuarioService.buscarPorId(dados.getUsuarioId()));
 
         if (secao.getPlanta() != null) {
             secao.getPlanta().setNome("Planta de " + secao.getNome());
@@ -72,17 +79,15 @@ public class SecaoService {
         return secaoRepository.save(secao);
     }
 
-    public void excluir(Long id) {
-        buscarPorId(id);
-        secaoRepository.deleteById(id);
+    @Transactional
+    public void excluir(Long id, Long usuarioId) {
+        Secao secao = buscarPorIdDoUsuario(id, usuarioId);
+        secaoRepository.delete(secao);
     }
 
     private void validar(SecaoRequest dados) {
         if (dados.getNome() == null || dados.getNome().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome da seção é obrigatório");
-        }
-        if (dados.getUsuarioId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selecione o usuário da seção");
         }
     }
 

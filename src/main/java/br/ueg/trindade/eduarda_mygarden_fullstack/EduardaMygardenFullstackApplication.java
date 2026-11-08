@@ -9,5 +9,4 @@ public class EduardaMygardenFullstackApplication {
     public static void main(String[] args) {
         SpringApplication.run(EduardaMygardenFullstackApplication.class, args);
     }
-
 }

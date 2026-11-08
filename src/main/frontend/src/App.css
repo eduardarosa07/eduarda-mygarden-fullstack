@@ -293,3 +293,177 @@ td strong { color: #404640; font-size: 12px; }
   .access-card { padding: 26px 20px; border-radius: 13px; }
   .access-heading h1 { font-size: 27px; }
 }
+
+/* ===== Melhorias do jardim ===== */
+.section-card-clickable { cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+.section-card-clickable:hover { border-color: #d8e2d9; box-shadow: 0 10px 28px rgba(60, 70, 60, .06); transform: translateY(-1px); }
+.section-card-clickable:focus-visible { outline: 2px solid rgba(207, 140, 161, .45); outline-offset: 3px; }
+.section-form-wrap { position: relative; }
+.section-form-close { position: absolute; right: 24px; bottom: 44px; }
+
+/* Plantas variadas */
+.plant-leaf-light { fill: #b1c9b5; }
+.plant-leaf-dark { fill: #789a7e; }
+.daisy-flower ellipse { fill: #f7f3ed; stroke: #d6cfc4; stroke-width: .8; }
+.daisy-center { fill: #e1b95d; stroke: #c89d43; stroke-width: .8; }
+.tiny-flower { fill: #efc2cf; stroke: #cf8ca1; stroke-width: .7; }
+.succulent-leaf { fill: #8fb19b; stroke: #6e917b; stroke-width: .8; }
+.succulent-leaf.alt { fill: #a9c4af; }
+.succulent-bloom { fill: #e8a7bb; stroke: #c97e97; stroke-width: .8; }
+.tulip-leaf { fill: #82a98b; stroke: #678870; stroke-width: .8; }
+.tulip-leaf.alt { fill: #9abc9f; }
+.tulip-flower { fill: #e69bb1; stroke: #c87891; stroke-width: 1; }
+.tulip-center { fill: #f0c766; }
+.herb-leaf { fill: #91b59a; stroke: #6d9076; stroke-width: .7; }
+.herb-leaf.alt { fill: #a8c4ad; }
+.herb-blooms circle { fill: #d9a3c4; stroke: #b97b9f; stroke-width: .6; }
+.plant-variant-1 .plant-pot { fill: #f7e9d9; stroke: #d4b68f; }
+.plant-variant-2 .plant-pot { fill: #e7efe6; stroke: #9bb49d; }
+.plant-variant-3 .plant-pot { fill: #f4dce3; stroke: #c997a7; }
+.plant-variant-4 .plant-pot { fill: #ece6f3; stroke: #b5a5c8; }
+
+/* Página inicial organizada em blocos, mantendo o visual simples */
+.home-dashboard-page { max-width: 1280px; }
+.home-welcome { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 30px; }
+.home-welcome h1 { margin: 0 0 5px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(34px, 4vw, 48px); font-weight: 500; color: #2f342f; letter-spacing: -1.2px; }
+.home-welcome h1 span { font-family: "Segoe UI Emoji", sans-serif; font-size: .58em; vertical-align: .18em; }
+.home-welcome p { margin: 0; color: var(--muted); font-size: 13px; }
+.home-dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(285px, .8fr); gap: 22px; align-items: start; }
+.home-main-column, .home-side-column { display: grid; gap: 22px; }
+.home-block { min-width: 0; }
+.home-section-heading { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-bottom: 14px; }
+.home-section-heading.compact { margin-bottom: 16px; }
+.home-section-heading h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 22px; font-weight: 500; color: #343934; }
+.home-garden-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.home-garden-card { position: relative; min-width: 0; min-height: 220px; padding: 14px 13px 13px; border: 1px solid var(--line); border-radius: 14px; background: #fff; text-align: left; color: var(--ink); display: flex; flex-direction: column; transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+.home-garden-card:hover { border-color: #d8e3d9; box-shadow: 0 9px 24px rgba(58, 68, 58, .06); transform: translateY(-1px); }
+.home-plant-area { min-height: 118px; display: grid; place-items: center; margin-bottom: 6px; background: #fbfcfa; border-radius: 10px; }
+.home-garden-card strong { display: block; font-size: 12px; font-weight: 700; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home-garden-card > span { color: #959a95; font-size: 10px; margin-top: 5px; }
+.home-garden-card .progress-track { margin-top: auto; margin-bottom: 0; }
+.home-new-section { align-items: center; justify-content: center; text-align: center; background: #fcfdfb; border-style: dashed; }
+.home-new-section .new-section-sprout { color: #7d9e84; font-size: 45px; line-height: 1; margin-bottom: 7px; }
+.home-new-section strong { font-family: Georgia, serif; font-size: 16px; font-weight: 500; }
+.home-new-section > span:not(.new-section-sprout) { max-width: 120px; line-height: 1.45; }
+.home-new-section b { position: absolute; right: 12px; bottom: 12px; width: 25px; height: 25px; border-radius: 50%; background: var(--pink-soft); color: var(--pink-dark); display: grid; place-items: center; font-size: 17px; font-weight: 500; }
+.home-tasks-block { margin-top: 2px; }
+.home-today-list { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #fff; padding: 2px 16px; }
+.home-task-row { display: grid; grid-template-columns: 24px minmax(0,1fr) auto; gap: 10px; align-items: center; min-height: 62px; border-bottom: 1px solid #eef0ed; }
+.home-task-row.done .home-task-copy strong { text-decoration: line-through; color: #a0a5a0; }
+.home-task-copy strong { display: block; font-size: 12px; font-weight: 650; }
+.home-task-copy span { display: block; color: #98a098; font-size: 10px; margin-top: 3px; }
+.home-task-row time { color: var(--pink-dark); background: var(--pink-soft); border-radius: 10px; padding: 4px 8px; font-size: 10px; font-weight: 650; }
+.home-add-task { width: 100%; border: 0; background: transparent; text-align: left; color: var(--pink-dark); padding: 13px 0; font-size: 11px; font-weight: 650; }
+.home-empty-line { padding: 24px 2px; color: #969c96; font-size: 11px; }
+.home-quote-card { min-height: 160px; padding: 24px; border: 1px solid #f0e5e8; border-radius: 15px; background: #fdf7f8; position: relative; overflow: hidden; }
+.home-quote-card > span { font-family: Georgia, serif; color: #d9a0b2; font-size: 34px; line-height: 1; }
+.home-quote-card p { margin: 0; max-width: 210px; color: #6f746f; font-family: Georgia, serif; font-size: 18px; line-height: 1.45; font-style: italic; }
+.quote-plant { position: absolute; right: 22px; bottom: 16px; font-size: 44px; opacity: .75; }
+.home-reminders-card, .home-progress-card { padding: 20px; }
+.home-reminder { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 12px 0; border-bottom: 1px solid #eef0ed; }
+.home-reminder:last-child { border-bottom: 0; }
+.reminder-dot { width: 7px; height: 7px; border-radius: 50%; background: #e7a0b4; }
+.home-reminder:nth-of-type(even) .reminder-dot { background: #9dbb9f; }
+.home-reminder strong { display: block; font-size: 11px; font-weight: 650; }
+.home-reminder small { display: block; color: #9aa09a; font-size: 9px; margin-top: 3px; }
+.home-reminder em { font-style: normal; color: var(--pink-dark); background: var(--pink-soft); padding: 4px 7px; border-radius: 8px; font-size: 9px; }
+.home-progress-content { display: flex; align-items: center; gap: 16px; }
+.progress-ring { --progress: 0%; width: 84px; height: 84px; border-radius: 50%; background: conic-gradient(var(--pink) 0 var(--progress), #edf1ed var(--progress) 100%); position: relative; display: grid; place-items: center; flex: 0 0 84px; }
+.progress-ring::after { content: ""; position: absolute; inset: 10px; border-radius: 50%; background: #fff; }
+.progress-ring span { position: relative; z-index: 1; font-family: Georgia, serif; font-size: 21px; color: #3c443d; }
+.home-progress-content strong { display: block; font-size: 11px; }
+.home-progress-content p { margin: 4px 0 0; color: #9ba09b; font-size: 10px; }
+.progress-message { display: block; color: var(--green-dark); margin-top: 15px; font-size: 10px; }
+
+/* Detalhe da seção */
+.back-link { border: 0; background: none; padding: 0; color: var(--green-dark); font-size: 11px; font-weight: 650; margin-bottom: 24px; }
+.back-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.section-detail-header { display: grid; grid-template-columns: 170px minmax(0, 1fr) auto; gap: 24px; align-items: center; border: 1px solid var(--line); border-radius: 16px; padding: 24px; margin-bottom: 24px; background: #fff; }
+.section-detail-plant { min-height: 160px; display: grid; place-items: center; border-radius: 12px; background: #f8faf7; }
+.section-detail-copy h1 { margin: 4px 0 7px; font-family: Georgia, serif; font-size: 37px; font-weight: 500; color: #303530; letter-spacing: -.8px; }
+.section-detail-copy > p { margin: 0 0 18px; color: #858b85; font-size: 12px; }
+.section-detail-progress-line { display: flex; justify-content: space-between; gap: 15px; color: #8f958f; font-size: 10px; }
+.section-detail-progress-line strong { color: var(--green-dark); font-size: 12px; }
+.section-detail-tasks { padding: 20px; }
+.section-detail-tasks .task-row:last-child { border-bottom: 0; }
+
+@media (max-width: 1120px) {
+  .home-garden-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .home-dashboard-grid { grid-template-columns: 1fr; }
+  .home-side-column { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
+  .home-quote-card, .home-reminders-card, .home-progress-card { min-height: 100%; }
+}
+
+@media (max-width: 820px) {
+  .home-side-column { grid-template-columns: 1fr; }
+  .home-welcome { align-items: flex-start; flex-direction: column; }
+  .section-detail-header { grid-template-columns: 120px 1fr; }
+  .section-detail-header > .button { grid-column: 1 / -1; justify-self: start; }
+}
+
+@media (max-width: 560px) {
+  .home-garden-cards { grid-template-columns: 1fr 1fr; }
+  .home-garden-card { min-height: 200px; }
+  .home-plant-area { min-height: 100px; }
+  .home-task-row { grid-template-columns: 24px minmax(0,1fr); }
+  .home-task-row time { grid-column: 2; justify-self: start; margin-bottom: 9px; }
+  .section-detail-header { grid-template-columns: 1fr; }
+  .section-detail-plant { min-height: 130px; }
+  .section-detail-copy h1 { font-size: 31px; }
+  .section-form-close { position: static; margin: -18px 0 24px 24px; }
+}
+
+
+/* ===== Aula 07 e 08: relacionamentos + React Router ===== */
+.brand, .nav-item, .link-button, .table-detail-link, .permission-detail-link { text-decoration: none; }
+.brand:visited, .nav-item:visited { color: inherit; }
+.link-button { display: inline-flex; align-items: center; justify-content: center; }
+.tags-inline { display: flex; flex-wrap: wrap; gap: 5px; }
+.table-detail-link { color: #344037; }
+.table-detail-link:hover, .permission-detail-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.permission-assignment { padding: 26px; display: grid; gap: 22px; max-width: 760px; }
+.permission-assignment .assignment-user { display: grid; gap: 7px; }
+.permission-assignment .assignment-user > span { font-size: 11px; font-weight: 700; color: #6f776f; }
+.permission-assignment fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 17px; display: grid; gap: 10px; }
+.permission-assignment legend { padding: 0 8px; font-family: Georgia, serif; color: #394139; }
+.permission-check { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 9px; background: #fbfcfa; }
+.permission-check input { width: auto; margin-top: 3px; }
+.permission-check strong, .permission-check small { display: block; }
+.permission-check strong { font-size: 12px; }
+.permission-check small { color: #919791; font-size: 10px; margin-top: 2px; }
+.detail-card { padding: 26px; max-width: 760px; }
+.detail-card dl { margin: 0 0 24px; display: grid; gap: 0; }
+.detail-card dl > div { display: grid; grid-template-columns: 150px 1fr; gap: 18px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+.detail-card dt { color: #8b918b; font-size: 11px; font-weight: 700; }
+.detail-card dd { margin: 0; color: #373e38; font-size: 13px; }
+.detail-actions { display: flex; gap: 9px; flex-wrap: wrap; }
+.home-router-shortcuts { max-width: 1175px; margin: -48px auto 40px; padding: 0 52px; display: flex; gap: 14px; justify-content: flex-end; }
+.home-router-shortcuts a { color: var(--green-dark); font-size: 11px; font-weight: 650; text-decoration: none; }
+.home-router-shortcuts a:hover { text-decoration: underline; }
+.not-found h1 { font-family: Georgia, serif; font-size: 45px; font-weight: 500; margin: 6px 0 10px; }
+.not-found p { color: var(--muted); margin-bottom: 22px; }
+@media (max-width: 760px) { .home-router-shortcuts { padding: 0 24px; margin-top: -52px; } .detail-card dl > div { grid-template-columns: 1fr; gap: 5px; } }
+
+
+/* ===== N2: Hábitos e registros ===== */
+.habit-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:24px; }
+.habit-card { border:1px solid var(--line); border-radius:15px; overflow:hidden; background:#fff; }
+.habit-card-image { height:150px; background:#f7faf6; display:grid; place-items:center; font-size:52px; }
+.habit-card-image img { width:100%; height:100%; object-fit:cover; }
+.habit-card-body { padding:18px; }
+.habit-card-body p { color:#858b85; font-size:11px; min-height:34px; }
+.tag-muted { background:#f0f1ef; color:#818681; }
+.checkbox-label { display:flex !important; flex-direction:row !important; align-items:center; gap:8px !important; align-self:end; min-height:44px; }
+.checkbox-label input { width:auto !important; }
+.habit-preview { border:1px solid var(--line); border-radius:12px; overflow:hidden; width:160px; height:110px; }
+.habit-preview img { width:100%; height:100%; object-fit:cover; }
+.record-list { border:1px solid var(--line); border-radius:15px; background:#fff; padding:4px 20px; margin-top:24px; }
+.record-row { display:grid; grid-template-columns:28px minmax(0,1fr) auto; gap:12px; align-items:center; padding:16px 2px; border-bottom:1px solid #eef0ed; }
+.record-row:last-child { border-bottom:0; }
+.record-row strong, .record-row small, .record-row p { display:block; }
+.record-row small { color:#9a9f9a; margin-top:3px; font-size:10px; }
+.record-row p { margin:5px 0 0; color:#7e847e; font-size:11px; }
+.record-status { width:22px; height:22px; border:1px solid #cdd7cd; border-radius:50%; display:grid; place-items:center; color:#8c958c; }
+.record-status.done { background:var(--green); border-color:var(--green); color:white; }
+@media (max-width:1050px){ .habit-grid{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:760px){ .habit-grid{grid-template-columns:1fr}.record-row{grid-template-columns:28px 1fr}.record-row .card-actions{grid-column:2} }

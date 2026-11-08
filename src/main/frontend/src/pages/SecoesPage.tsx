@@ -1,14 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Feedback from '../components/Feedback'
 import SecaoForm from '../components/secao/SecaoForm'
 import SecaoList from '../components/secao/SecaoList'
 import api, { getApiMessage } from '../services/api'
-import type { Secao, SecaoPayload, Usuario } from '../types'
+import type { Secao, SecaoPayload } from '../types'
 
 export default function SecoesPage() {
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const iniciarCriacao = searchParams.get('nova') === '1'
   const [secoes, setSecoes] = useState<Secao[]>([])
-  const [usuarios, setUsuarios] = useState<Usuario[]>([])
   const [secaoEditando, setSecaoEditando] = useState<Secao | null>(null)
+  const [formAberto, setFormAberto] = useState(iniciarCriacao)
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
@@ -17,22 +21,17 @@ export default function SecoesPage() {
   async function carregarSecoes() {
     setLoading(true)
     try {
-      const [secoesResposta, usuariosResposta] = await Promise.all([
-        api.get<Secao[]>('/secoes'),
-        api.get<Usuario[]>('/usuarios'),
-      ])
-      setSecoes(secoesResposta.data)
-      setUsuarios(usuariosResposta.data)
+      const resposta = await api.get<Secao[]>('/secoes')
+      setSecoes(resposta.data)
     } catch (err) {
-      setError(getApiMessage(err, 'Não foi possível carregar as seções.'))
+      setError(getApiMessage(err, 'Não foi possível carregar as suas seções.'))
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => {
-    carregarSecoes()
-  }, [])
+  useEffect(() => { carregarSecoes() }, [])
+  useEffect(() => { if (iniciarCriacao) setFormAberto(true) }, [iniciarCriacao])
 
   const secoesFiltradas = useMemo(() => {
     const termo = search.trim().toLowerCase()
@@ -52,6 +51,7 @@ export default function SecoesPage() {
         setMessage('Seção cadastrada.')
       }
       setSecaoEditando(null)
+      setFormAberto(false)
       await carregarSecoes()
     } catch (err) {
       setError(getApiMessage(err))
@@ -72,19 +72,46 @@ export default function SecoesPage() {
     }
   }
 
+  function novaSecao() {
+    setSecaoEditando(null)
+    setFormAberto(true)
+    setMessage('')
+    setError('')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function editarSecao(secao: Secao) {
+    setSecaoEditando(secao)
+    setFormAberto(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function fecharForm() {
+    setSecaoEditando(null)
+    setFormAberto(false)
+    setSearchParams({})
+  }
+
   return (
     <div className="page">
       <div className="page-kicker">Meu jardim</div>
-      <div className="page-heading"><div><h1>Minhas seções</h1><p>Organize as tarefas por áreas do seu jardim.</p></div></div>
+      <div className="page-heading">
+        <div><h1>Minhas seções</h1><p>Veja somente as áreas do seu jardim e entre em uma seção para acompanhar suas tarefas.</p></div>
+        <button className="button button-primary" onClick={novaSecao}>+ Nova seção</button>
+      </div>
       <Feedback message={message} tone="success" />
       <Feedback message={error} tone="error" />
 
-      <SecaoForm
-        secaoEditando={secaoEditando}
-        usuarios={usuarios}
-        onSalvar={salvarSecao}
-        onCancelar={() => setSecaoEditando(null)}
-      />
+      {formAberto && (
+        <div className="section-form-wrap">
+          <SecaoForm
+            secaoEditando={secaoEditando}
+            onSalvar={salvarSecao}
+            onCancelar={fecharForm}
+          />
+          {!secaoEditando && <button className="text-button section-form-close" type="button" onClick={fecharForm}>Fechar cadastro</button>}
+        </div>
+      )}
 
       <div className="toolbar">
         <label className="search-box"><span>⌕</span><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Pesquisar seções" /></label>
@@ -92,8 +119,8 @@ export default function SecoesPage() {
       </div>
 
       {loading
-        ? <div className="loading-line">Carregando seções…</div>
-        : <SecaoList secoes={secoesFiltradas} onEditar={setSecaoEditando} onExcluir={excluirSecao} />}
+        ? <div className="loading-line">Carregando suas seções…</div>
+        : <SecaoList secoes={secoesFiltradas} onAbrir={(secao) => navigate(`/secoes/${secao.id}`)} onEditar={editarSecao} onExcluir={excluirSecao} />}
     </div>
   )
 }

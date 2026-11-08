@@ -1,28 +1,26 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import type { Secao, SecaoPayload, Usuario } from '../../types'
+import type { Secao, SecaoPayload } from '../../types'
 
 type Props = {
   secaoEditando: Secao | null
-  usuarios: Usuario[]
   onSalvar: (dados: SecaoPayload) => Promise<void>
   onCancelar: () => void
 }
 
-const vazio = { nome: '', descricao: '', usuarioId: '' }
+const vazio = { nome: '', descricao: '' }
 
-export default function SecaoForm({ secaoEditando, usuarios, onSalvar, onCancelar }: Props) {
+export default function SecaoForm({ secaoEditando, onSalvar, onCancelar }: Props) {
   const [form, setForm] = useState(vazio)
 
   useEffect(() => {
     setForm(secaoEditando
-      ? { nome: secaoEditando.nome, descricao: secaoEditando.descricao ?? '', usuarioId: String(secaoEditando.usuario.id) }
+      ? { nome: secaoEditando.nome, descricao: secaoEditando.descricao ?? '' }
       : vazio)
   }, [secaoEditando])
 
   async function enviar(event: FormEvent) {
     event.preventDefault()
-    if (!form.usuarioId) return
-    await onSalvar({ nome: form.nome, descricao: form.descricao, usuarioId: Number(form.usuarioId) })
+    await onSalvar({ nome: form.nome, descricao: form.descricao })
   }
 
   return (
@@ -32,16 +30,9 @@ export default function SecaoForm({ secaoEditando, usuarios, onSalvar, onCancela
         <h2>{secaoEditando ? 'Editar seção' : 'Criar uma área do jardim'}</h2>
       </div>
       <form className="form-grid" onSubmit={enviar}>
-        <label>
+        <label className="wide">
           <span>Nome *</span>
           <input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} placeholder="Ex.: Estudos" required />
-        </label>
-        <label>
-          <span>Usuário *</span>
-          <select value={form.usuarioId} onChange={(e) => setForm({ ...form, usuarioId: e.target.value })} required>
-            <option value="">Selecione</option>
-            {usuarios.map((usuario) => <option key={usuario.id} value={usuario.id}>{usuario.nome}</option>)}
-          </select>
         </label>
         <label className="wide">
           <span>Descrição</span>

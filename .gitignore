@@ -36,3 +36,10 @@ build/
 data/
 *.mv.db
 *.trace.db
+
+### Front-end ###
+src/main/frontend/node_modules/
+src/main/frontend/dist/
+
+### Uploads locais ###
+uploads/

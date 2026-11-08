@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useNavigate } from 'react-router-dom'
 import api, { getApiMessage } from '../services/api'
-import type { Secao, Tarefa } from '../types'
+import type { Secao, Tarefa, Usuario } from '../types'
 import PlantIllustration from '../components/PlantIllustration'
 import Feedback from '../components/Feedback'
-import type { PageKey } from '../components/AppShell'
-
-type Props = { onNavigate: (page: PageKey) => void }
+type Props = { usuarioLogado: Usuario }
 
 function todayIso() {
   const now = new Date()
@@ -15,122 +14,170 @@ function todayIso() {
   return `${y}-${m}-${d}`
 }
 
-function stageLabel(stage?: string) {
-  const labels: Record<string, string> = {
-    SEMENTE: 'Semente',
-    BROTO: 'Broto',
-    PLANTA_PEQUENA: 'Planta pequena',
-    PLANTA_MEDIA: 'Planta média',
-    PLANTA_GRANDE: 'Planta grande',
-    FLORESCIMENTO: 'Florescimento',
-  }
-  return stage ? labels[stage] ?? stage : 'Semente'
+function formatDate(date?: string | null) {
+  return date ? date.split('-').reverse().slice(0, 2).join('/') : ''
 }
 
-export default function DashboardPage({ onNavigate }: Props) {
+export default function DashboardPage({ usuarioLogado }: Props) {
+  const navigate = useNavigate()
   const [secoes, setSecoes] = useState<Secao[]>([])
   const [tarefas, setTarefas] = useState<Tarefa[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    Promise.all([api.get<Secao[]>('/secoes'), api.get<Tarefa[]>('/tarefas')])
-      .then(([s, t]) => {
-        setSecoes(s.data)
-        setTarefas(t.data)
-      })
-      .catch((err) => setError(getApiMessage(err, 'Não consegui carregar o jardim. Verifique se o Spring Boot está rodando.')))
-      .finally(() => setLoading(false))
-  }, [])
+  async function carregar() {
+    try {
+      const [s, t] = await Promise.all([api.get<Secao[]>('/secoes'), api.get<Tarefa[]>('/tarefas')])
+      setSecoes(s.data)
+      setTarefas(t.data)
+    } catch (err) {
+      setError(getApiMessage(err, 'Não consegui carregar o jardim. Verifique se o Spring Boot está rodando.'))
+    } finally {
+      setLoading(false)
+    }
+  }
 
-  const tarefasHoje = useMemo(() => tarefas.filter((t) => t.data === todayIso()), [tarefas])
-  const pendentes = tarefas.filter((t) => !t.concluida).length
-  const media = secoes.length
-    ? Math.round(secoes.reduce((sum, s) => sum + (s.planta?.progresso ?? 0), 0) / secoes.length)
-    : 0
-  const proximas = tarefas
+  useEffect(() => { carregar() }, [])
+
+  const secoesUsuario = useMemo(
+    () => secoes.filter((s) => s.usuario?.id === usuarioLogado.id),
+    [secoes, usuarioLogado.id],
+  )
+  const tarefasUsuario = useMemo(
+    () => tarefas.filter((t) => t.secao?.usuario?.id === usuarioLogado.id),
+    [tarefas, usuarioLogado.id],
+  )
+  const tarefasHoje = useMemo(() => tarefasUsuario.filter((t) => t.data === todayIso()), [tarefasUsuario])
+  const proximas = useMemo(() => tarefasUsuario
     .filter((t) => !t.concluida && t.data && t.data >= todayIso())
     .sort((a, b) => (a.data ?? '').localeCompare(b.data ?? ''))
-    .slice(0, 4)
+    .slice(0, 4), [tarefasUsuario])
+
+  const concluidas = tarefasUsuario.filter((t) => t.concluida).length
+  const progressoGeral = tarefasUsuario.length ? Math.round((concluidas / tarefasUsuario.length) * 100) : 0
+  const primeiroNome = usuarioLogado.nome.trim().split(/\s+/)[0] || usuarioLogado.nome
+
+  function resumoSecao(secaoId: number) {
+    const daSecao = tarefasUsuario.filter((t) => t.secao.id === secaoId)
+    return { total: daSecao.length, concluidas: daSecao.filter((t) => t.concluida).length }
+  }
+
+  async function toggleTask(tarefa: Tarefa) {
+    setError('')
+    try {
+      await api.patch(`/tarefas/${tarefa.id}/${tarefa.concluida ? 'desmarcar' : 'concluir'}`)
+      await carregar()
+    } catch (err) {
+      setError(getApiMessage(err, 'Não foi possível atualizar a tarefa.'))
+    }
+  }
 
   if (loading) return <div className="page"><div className="loading-line">Preparando seu jardim…</div></div>
 
   return (
-    <div className="page dashboard-page">
-      <div className="page-kicker">Seu espaço de hoje</div>
-      <div className="page-heading dashboard-heading">
+    <div className="page home-dashboard-page">
+      <div className="home-welcome">
         <div>
-          <h1>Meu jardim</h1>
-          <p>Organize suas tarefas por áreas e acompanhe o crescimento de cada planta.</p>
+          <h1>Olá, {primeiroNome}! <span aria-hidden="true">🌿</span></h1>
+          <p>Seu jardim está crescendo a cada conquista.</p>
         </div>
-        <button className="button button-primary" onClick={() => onNavigate('tarefas')}>+ Nova tarefa</button>
+        <button className="button button-primary" onClick={() => navigate('/tarefas')}>+ Nova tarefa</button>
       </div>
 
       {error && <Feedback message={error} tone="error" />}
 
-      <section className="stats-row" aria-label="Resumo">
-        <div className="stat"><span>Tarefas pendentes</span><strong>{pendentes}</strong></div>
-        <div className="stat"><span>Seções no jardim</span><strong>{secoes.length}</strong></div>
-        <div className="stat"><span>Progresso médio</span><strong>{media}%</strong></div>
-      </section>
-
-      <div className="dashboard-grid">
-        <section className="panel garden-panel">
-          <div className="section-title-row">
-            <div><span className="eyebrow">Jardim</span><h2>Como suas áreas estão crescendo</h2></div>
-            <button className="text-button" onClick={() => onNavigate('secoes')}>Ver seções</button>
-          </div>
-
-          {secoes.length === 0 ? (
-            <div className="empty-state compact">
-              <PlantIllustration size={90} />
-              <div><strong>Seu jardim ainda está vazio.</strong><p>Crie primeiro um usuário e depois sua primeira seção.</p></div>
-              <button className="button button-soft" onClick={() => onNavigate('usuarios')}>Começar</button>
+      <div className="home-dashboard-grid">
+        <div className="home-main-column">
+          <section className="home-block">
+            <div className="home-section-heading">
+              <h2>Meu Jardim</h2>
+              <button className="text-button" onClick={() => navigate('/secoes')}>Ver todas</button>
             </div>
-          ) : (
-            <div className="garden-list">
-              {secoes.slice(0, 4).map((secao) => (
-                <article className="garden-item" key={secao.id}>
-                  <PlantIllustration stage={secao.planta?.estagioCrescimento} size={82} />
-                  <div className="garden-copy">
-                    <div className="garden-name"><strong>{secao.nome}</strong><span>{secao.planta?.progresso ?? 0}%</span></div>
+
+            <div className="home-garden-cards">
+              {secoesUsuario.slice(0, 3).map((secao) => {
+                const resumo = resumoSecao(secao.id)
+                return (
+                  <button className="home-garden-card" key={secao.id} onClick={() => navigate(`/secoes/${secao.id}`)}>
+                    <div className="home-plant-area">
+                      <PlantIllustration stage={secao.planta?.estagioCrescimento} variant={secao.planta?.id ?? secao.id} size={108} />
+                    </div>
+                    <strong>{secao.nome}</strong>
+                    <span>{resumo.concluidas}/{resumo.total} tarefas</span>
                     <div className="progress-track"><i style={{ width: `${secao.planta?.progresso ?? 0}%` }} /></div>
-                    <small>{stageLabel(secao.planta?.estagioCrescimento)}</small>
-                  </div>
-                </article>
-              ))}
+                  </button>
+                )
+              })}
+              <button className="home-garden-card home-new-section" onClick={() => navigate('/secoes?nova=1')}>
+                <span className="new-section-sprout" aria-hidden="true">♧</span>
+                <strong>Nova seção</strong>
+                <span>Crie uma nova área do seu jardim.</span>
+                <b>+</b>
+              </button>
             </div>
-          )}
-        </section>
+          </section>
 
-        <section className="panel today-panel">
-          <div className="section-title-row">
-            <div><span className="eyebrow pink">Hoje</span><h2>Tarefas do dia</h2></div>
-            <span className="count-badge">{tarefasHoje.length}</span>
-          </div>
-          <div className="simple-task-list">
-            {tarefasHoje.length === 0 && <p className="muted">Nenhuma tarefa marcada para hoje.</p>}
-            {tarefasHoje.slice(0, 5).map((t) => (
-              <div className={`simple-task ${t.concluida ? 'done' : ''}`} key={t.id}>
-                <span className="task-check">{t.concluida ? '✓' : ''}</span>
-                <div><strong>{t.titulo}</strong><small>{t.secao.nome}{t.horario ? ` · ${t.horario.slice(0, 5)}` : ''}</small></div>
+          <section className="home-block home-tasks-block">
+            <div className="home-section-heading">
+              <h2>Tarefas de hoje</h2>
+              <button className="text-button" onClick={() => navigate('/tarefas')}>Ver todas</button>
+            </div>
+            <div className="home-today-list">
+              {tarefasHoje.length === 0 && <div className="home-empty-line">Nenhuma tarefa marcada para hoje.</div>}
+              {tarefasHoje.slice(0, 5).map((tarefa) => (
+                <div className={`home-task-row ${tarefa.concluida ? 'done' : ''}`} key={tarefa.id}>
+                  <button className="round-check" onClick={() => toggleTask(tarefa)} aria-label={tarefa.concluida ? 'Desmarcar tarefa' : 'Concluir tarefa'}>{tarefa.concluida ? '✓' : ''}</button>
+                  <div className="home-task-copy">
+                    <strong>{tarefa.titulo}</strong>
+                    <span>{tarefa.secao.nome}</span>
+                  </div>
+                  {tarefa.horario && <time>{tarefa.horario.slice(0, 5)}</time>}
+                </div>
+              ))}
+              <button className="home-add-task" onClick={() => navigate('/tarefas')}>＋ Adicionar tarefa</button>
+            </div>
+          </section>
+        </div>
+
+        <aside className="home-side-column">
+          <section className="home-quote-card">
+            <span>“</span>
+            <p>Pequenos cuidados fazem grandes coisas crescerem.</p>
+            <div className="quote-plant" aria-hidden="true">🌱</div>
+          </section>
+
+          <section className="panel home-reminders-card">
+            <div className="home-section-heading compact">
+              <h2>Próximos lembretes</h2>
+              <button className="text-button" onClick={() => navigate('/tarefas')}>Ver todas</button>
+            </div>
+            {proximas.length === 0 && <p className="muted">Nada pendente com data próxima.</p>}
+            {proximas.map((tarefa) => (
+              <div className="home-reminder" key={tarefa.id}>
+                <span className="reminder-dot" />
+                <div>
+                  <strong>{tarefa.titulo}</strong>
+                  <small>{formatDate(tarefa.data)}{tarefa.horario ? ` · ${tarefa.horario.slice(0, 5)}` : ''}</small>
+                </div>
+                <em>{tarefa.secao.nome}</em>
               </div>
             ))}
-          </div>
-          <button className="text-button footer-link" onClick={() => onNavigate('tarefas')}>Abrir todas as tarefas</button>
-        </section>
+          </section>
 
-        <section className="panel reminders-panel">
-          <div className="section-title-row">
-            <div><span className="eyebrow">Próximos</span><h2>Lembretes</h2></div>
-          </div>
-          {proximas.length === 0 ? <p className="muted">Nada pendente com data próxima.</p> : proximas.map((t) => (
-            <div className="reminder-row" key={t.id}>
-              <time>{t.data?.split('-').reverse().slice(0, 2).join('/')}</time>
-              <div><strong>{t.titulo}</strong><small>{t.secao.nome}</small></div>
+          <section className="panel home-progress-card">
+            <div className="home-section-heading compact"><h2>Seu progresso geral</h2></div>
+            <div className="home-progress-content">
+              <div className="progress-ring" style={{ '--progress': `${progressoGeral}%` } as CSSProperties}>
+                <span>{progressoGeral}%</span>
+              </div>
+              <div>
+                <strong>{concluidas} de {tarefasUsuario.length} tarefas</strong>
+                <p>concluídas no seu jardim</p>
+              </div>
             </div>
-          ))}
-        </section>
+            <small className="progress-message">Continue cultivando no seu ritmo. ♡</small>
+          </section>
+        </aside>
       </div>
     </div>
   )

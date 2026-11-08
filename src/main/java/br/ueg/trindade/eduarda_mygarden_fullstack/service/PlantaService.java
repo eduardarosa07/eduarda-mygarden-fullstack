@@ -21,8 +21,8 @@ public class PlantaService {
         this.tarefaRepository = tarefaRepository;
     }
 
-    public List<Planta> listarTodos() {
-        return plantaRepository.findAll();
+    public List<Planta> listarDoUsuario(Long usuarioId) {
+        return plantaRepository.findAllBySecaoUsuarioIdOrderByIdAsc(usuarioId);
     }
 
     public Planta recalcularPorSecao(Long secaoId) {

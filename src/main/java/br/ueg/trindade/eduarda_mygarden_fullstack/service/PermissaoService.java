@@ -4,33 +4,42 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.ueg.trindade.eduarda_mygarden_fullstack.model.Permissao;
+import br.ueg.trindade.eduarda_mygarden_fullstack.model.Usuario;
 import br.ueg.trindade.eduarda_mygarden_fullstack.repository.PermissaoRepository;
+import br.ueg.trindade.eduarda_mygarden_fullstack.repository.UsuarioRepository;
 
 @Service
 public class PermissaoService {
     private final PermissaoRepository permissaoRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public PermissaoService(PermissaoRepository permissaoRepository) {
+    public PermissaoService(PermissaoRepository permissaoRepository, UsuarioRepository usuarioRepository) {
         this.permissaoRepository = permissaoRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<Permissao> listarTodos() {
         return permissaoRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Permissao buscarPorId(Long id) {
         return permissaoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Permissão não encontrada"));
     }
 
+    @Transactional
     public Permissao criar(Permissao permissao) {
         validar(permissao, null);
         return permissaoRepository.save(permissao);
     }
 
+    @Transactional
     public Permissao atualizar(Long id, Permissao dados) {
         Permissao permissao = buscarPorId(id);
         validar(dados, id);
@@ -39,9 +48,17 @@ public class PermissaoService {
         return permissaoRepository.save(permissao);
     }
 
+    @Transactional
     public void excluir(Long id) {
-        buscarPorId(id);
-        permissaoRepository.deleteById(id);
+        Permissao permissao = buscarPorId(id);
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        for (Usuario usuario : usuarios) {
+            boolean removeu = usuario.getPermissoes().removeIf(p -> p.getId().equals(permissao.getId()));
+            if (removeu) {
+                usuarioRepository.save(usuario);
+            }
+        }
+        permissaoRepository.delete(permissao);
     }
 
     private void validar(Permissao permissao, Long idAtual) {

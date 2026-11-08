@@ -1,16 +1,9 @@
-export interface Permissao {
-  id: number
-  nome: string
-  descricao?: string | null
-}
+export type { Habito, HabitoPayload } from './Habito'
+export type { RegistroHabito, RegistroHabitoPayload } from './RegistroHabito'
+export type { Permissao } from './Permissao'
+export type { Usuario } from './Usuario'
 
-export interface Usuario {
-  id: number
-  nome: string
-  username: string
-  email: string
-  permissao?: Permissao | null
-}
+import type { Usuario } from './Usuario'
 
 export type EstagioCrescimento =
   | 'SEMENTE'
@@ -50,13 +43,11 @@ export interface UsuarioPayload {
   username: string
   email: string
   senha?: string
-  permissaoId?: number | null
 }
 
 export interface SecaoPayload {
   nome: string
   descricao?: string
-  usuarioId: number
 }
 
 export interface TarefaPayload {

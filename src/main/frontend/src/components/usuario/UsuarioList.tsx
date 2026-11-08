@@ -12,7 +12,7 @@ export default function UsuarioList({ usuarios, onEditar, onExcluir }: Props) {
     <div className="table-wrap panel">
       <table>
         <thead>
-          <tr><th>Nome</th><th>Username</th><th>E-mail</th><th>Permissão</th><th /></tr>
+          <tr><th>Nome</th><th>Username</th><th>E-mail</th><th>Permissões</th><th /></tr>
         </thead>
         <tbody>
           {usuarios.map((usuario) => (
