@@ -1,65 +1,79 @@
-# 🌱 My Garden
+# 🌷 My Garden
 
-O **My Garden** é um sistema web para organizar tarefas, seções e hábitos. Conforme o usuário conclui suas tarefas, as plantas do jardim evoluem visualmente.
+O **My Garden** é uma aplicação web desenvolvida para ajudar na organização da rotina de forma simples, visual e personalizada.
 
-## N2
+A proposta do sistema é permitir que cada usuário organize suas atividades em **seções**, cadastre e acompanhe **tarefas**, gerencie **hábitos** e visualize o progresso de forma integrada ao conceito de crescimento de plantas.
 
-A versão da N2 acrescenta **Hábitos** e **Registros de Hábitos**, relacionados em `1:N`, CRUD completo e autenticação com **Spring Security + JWT**.
+Cada usuário possui sua própria conta e seus próprios dados, garantindo que suas seções, tarefas, hábitos e registros fiquem separados dos dados de outros usuários.
 
-### Tecnologias
-- Java 21 + Spring Boot 4.1.1
-- Spring Data JPA + H2 (PostgreSQL disponível no projeto)
-- Spring Security + JWT
-- React + TypeScript + Vite + React Router
-- Axios
+O sistema também possui controle de acesso por permissões, diferenciando usuários comuns de administradores.
+
+## ✨ Principais funcionalidades
+
+- Cadastro e login de usuários;
+- Autenticação com Spring Security e JWT;
+- Controle de permissões entre `USER` e `ADMIN`;
+- Organização de tarefas por seções;
+- Cadastro, edição e exclusão de tarefas;
+- Gerenciamento de plantas;
+- Cadastro e acompanhamento de hábitos;
+- Registro da realização de hábitos;
+- Upload de imagens;
+- Gerenciamento de usuários e permissões pela área administrativa;
+- Proteção de rotas e isolamento dos dados de cada usuário.
+
+## 🛠️ Tecnologias utilizadas
+
+### Backend
+- Java
+- Spring Boot
+- Spring Data JPA
+- Spring Security
+- JWT
 - Bean Validation
-- MultipartFile para upload de imagem
-- Docker / Docker Compose
+- H2 Database
 
-## Rodar localmente
+### Frontend
+- React
+- TypeScript
+- Vite
+- React Router
+- Axios
+- HTML
+- CSS
 
-Back-end:
-```powershell
-.\mvnw.cmd spring-boot:run
+## 🌿 Estrutura do sistema
+
+De forma geral, o My Garden funciona com a seguinte organização:
+
+```text
+Usuário
+   │
+   ├── Seções
+   │     └── Tarefas
+   │
+   ├── Plantas
+   │
+   └── Hábitos
+          └── Registros de hábitos
 ```
 
-Front-end (outro terminal):
-```powershell
-cd .\src\main\frontend
-npm install
-npm run dev
-```
+O projeto utiliza uma arquitetura em camadas no backend, separando responsabilidades entre `Controller`, `Service`, `Repository` e `Model`.
 
-Site: `http://localhost:5173`  
-H2 Console: `http://localhost:8080/h2-console`
+No frontend, as páginas e componentes são organizados utilizando React e React Router, enquanto a comunicação com a API é realizada com Axios.
 
-JDBC URL: `jdbc:h2:file:./data/mygarden;AUTO_SERVER=TRUE`  
-Usuário H2: `sa`  
-Senha: em branco
+## 🎓 Sobre o projeto
 
-## Docker
-```bash
-docker compose up --build
-```
+O **My Garden** foi desenvolvido como projeto acadêmico da disciplina de **Programação Web II**, do curso de **Sistemas de Informação da Universidade Estadual de Goiás — UEG**.
 
-> Consulte `CHECKLIST_N2.md` para ver os critérios implementados.
+O projeto aplica conceitos de desenvolvimento full stack, APIs REST, persistência de dados, relacionamentos com JPA, autenticação, autorização, CRUD e integração entre frontend e backend.
 
+## 👩‍💻 Desenvolvido por
 
-## Autenticação da N2
+**Eduarda Rosa**  
+Sistemas de Informação — UEG
 
-A autenticação segue o padrão do projeto de referência fornecido pelo professor:
-
-- Spring Security com sessão `STATELESS`;
-- BCrypt para senhas;
-- JWT com `jjwt 0.12.6`;
-- `JwtFilter`, `JwtUtil` e `SecurityConfig`;
-- Axios envia `Authorization: Bearer <token>` automaticamente;
-- React Router protege as páginas privadas;
-- área administrativa disponível para usuários com permissão `ADMIN`.
-
-Usuário administrativo criado automaticamente para testes locais:
-
-- username: `admin`
-- senha: `admin123`
-
-Usuários cadastrados pela tela recebem a permissão `USER` automaticamente.
+<p align="center">
+  🌷 <strong>My Garden</strong><br>
+  <em>Cultive sua rotina.</em>
+</p>
