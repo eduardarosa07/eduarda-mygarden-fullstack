@@ -35,7 +35,7 @@ export default function PlantasPage() {
           {plantas.length === 0 && <div className="empty-state"><PlantIllustration size={100} /><div><strong>Ainda não há plantas.</strong><p>Uma planta nasce automaticamente quando você cria uma seção.</p></div></div>}
           {plantas.map((planta) => (
             <article className="plant-card" key={planta.id}>
-              <div className="plant-card-visual"><PlantIllustration stage={planta.estagioCrescimento} variant={planta.id} size={145} /></div>
+              <div className="plant-card-visual"><PlantIllustration stage={planta.estagioCrescimento} progress={planta.progresso} variant={planta.id} size={145} /></div>
               <div><span className="eyebrow">{stageLabels[planta.estagioCrescimento]}</span><h3>{planta.nome}</h3><p>{planta.progresso}% de progresso</p></div>
               <div className="progress-track"><i style={{ width: `${planta.progresso}%` }} /></div>
             </article>

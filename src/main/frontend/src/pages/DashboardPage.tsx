@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api, { getApiMessage } from '../services/api'
-import type { Secao, Tarefa, Usuario } from '../types'
+import type { Habito, Secao, Tarefa, Usuario } from '../types'
 import PlantIllustration from '../components/PlantIllustration'
 import Feedback from '../components/Feedback'
 type Props = { usuarioLogado: Usuario }
@@ -22,14 +22,20 @@ export default function DashboardPage({ usuarioLogado }: Props) {
   const navigate = useNavigate()
   const [secoes, setSecoes] = useState<Secao[]>([])
   const [tarefas, setTarefas] = useState<Tarefa[]>([])
+  const [habitos, setHabitos] = useState<Habito[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   async function carregar() {
     try {
-      const [s, t] = await Promise.all([api.get<Secao[]>('/secoes'), api.get<Tarefa[]>('/tarefas')])
+      const [s, t, h] = await Promise.all([
+        api.get<Secao[]>('/secoes'),
+        api.get<Tarefa[]>('/tarefas'),
+        api.get<Habito[]>('/habitos'),
+      ])
       setSecoes(s.data)
       setTarefas(t.data)
+      setHabitos(h.data)
     } catch (err) {
       setError(getApiMessage(err, 'Não consegui carregar o jardim. Verifique se o Spring Boot está rodando.'))
     } finally {
@@ -46,6 +52,10 @@ export default function DashboardPage({ usuarioLogado }: Props) {
   const tarefasUsuario = useMemo(
     () => tarefas.filter((t) => t.secao?.usuario?.id === usuarioLogado.id),
     [tarefas, usuarioLogado.id],
+  )
+  const habitosResumo = useMemo(
+    () => [...habitos].sort((a, b) => Number(b.ativo) - Number(a.ativo)).slice(0, 3),
+    [habitos],
   )
   const tarefasHoje = useMemo(() => tarefasUsuario.filter((t) => t.data === todayIso()), [tarefasUsuario])
   const proximas = useMemo(() => tarefasUsuario
@@ -100,7 +110,7 @@ export default function DashboardPage({ usuarioLogado }: Props) {
                 return (
                   <button className="home-garden-card" key={secao.id} onClick={() => navigate(`/secoes/${secao.id}`)}>
                     <div className="home-plant-area">
-                      <PlantIllustration stage={secao.planta?.estagioCrescimento} variant={secao.planta?.id ?? secao.id} size={108} />
+                      <PlantIllustration stage={secao.planta?.estagioCrescimento} progress={secao.planta?.progresso} variant={secao.planta?.id ?? secao.id} size={108} />
                     </div>
                     <strong>{secao.nome}</strong>
                     <span>{resumo.concluidas}/{resumo.total} tarefas</span>
@@ -113,6 +123,39 @@ export default function DashboardPage({ usuarioLogado }: Props) {
                 <strong>Nova seção</strong>
                 <span>Crie uma nova área do seu jardim.</span>
                 <b>+</b>
+              </button>
+            </div>
+          </section>
+
+          <section className="home-block home-habits-block">
+            <div className="home-section-heading">
+              <h2>Meus Hábitos</h2>
+              <button className="text-button" onClick={() => navigate('/habitos')}>Ver todos</button>
+            </div>
+
+            <div className="home-habit-cards">
+              {habitosResumo.map((habito) => (
+                <button className="home-habit-card" key={habito.id} onClick={() => navigate('/habitos')}>
+                  <div className="home-habit-thumb">
+                    {habito.imagem
+                      ? <img src={`http://localhost:8080/uploads/habitos/${habito.imagem}`} alt="" />
+                      : <span aria-hidden="true">🌿</span>}
+                  </div>
+                  <div className="home-habit-copy">
+                    <div className="home-habit-meta">
+                      <span>{habito.frequencia}</span>
+                      <em>{habito.ativo ? 'Ativo' : 'Pausado'}</em>
+                    </div>
+                    <strong>{habito.nome}</strong>
+                    <p>{habito.descricao || 'Sem descrição.'}</p>
+                  </div>
+                </button>
+              ))}
+
+              <button className="home-habit-card home-new-habit" onClick={() => navigate('/habitos')}>
+                <div className="home-habit-new-icon" aria-hidden="true">＋</div>
+                <strong>Novo hábito</strong>
+                <p>Crie um hábito para acompanhar sua rotina.</p>
               </button>
             </div>
           </section>

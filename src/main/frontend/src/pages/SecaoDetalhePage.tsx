@@ -39,7 +39,7 @@ export default function SecaoDetalhePage() {
     <div className="page section-detail-page">
       <button className="back-link" onClick={() => navigate('/secoes')}>← Voltar para minhas seções</button>
       <div className="section-detail-header">
-        <div className="section-detail-plant"><PlantIllustration stage={secao.planta?.estagioCrescimento} variant={secao.planta?.id ?? secao.id} size={150} /></div>
+        <div className="section-detail-plant"><PlantIllustration stage={secao.planta?.estagioCrescimento} progress={secao.planta?.progresso} variant={secao.planta?.id ?? secao.id} size={150} /></div>
         <div className="section-detail-copy"><span className="page-kicker">Seção</span><h1>{secao.nome}</h1><p>{secao.descricao || 'Sem descrição.'}</p><div className="section-detail-progress-line"><span>{concluidas} de {tarefas.length} tarefas concluídas</span><strong>{secao.planta?.progresso ?? 0}%</strong></div><div className="progress-track"><i style={{ width: `${secao.planta?.progresso ?? 0}%` }} /></div></div>
         <button className="button button-primary" onClick={() => navigate('/tarefas', { state: { secaoId: secao.id } })}>+ Nova tarefa</button>
       </div>

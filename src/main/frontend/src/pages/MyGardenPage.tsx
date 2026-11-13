@@ -17,7 +17,7 @@ export default function MyGardenPage({ usuarioLogado, onSair }: Props) {
   const [page, setPage] = useState<PageKey>('dashboard')
 
   const paginas = {
-    dashboard: <DashboardPage onNavigate={setPage} />,
+    dashboard: <DashboardPage usuarioLogado={usuarioLogado} />,
     secoes: <SecoesPage />,
     tarefas: <TarefasPage />,
     plantas: <PlantasPage />,

@@ -18,7 +18,7 @@ export default function SecaoItem({ secao, onAbrir, onEditar, onExcluir }: Props
   return (
     <article className="section-card section-card-clickable" onClick={() => onAbrir(secao)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') onAbrir(secao) }}>
       <div className="section-card-plant">
-        <PlantIllustration stage={secao.planta?.estagioCrescimento} variant={secao.planta?.id ?? secao.id} size={105} />
+        <PlantIllustration stage={secao.planta?.estagioCrescimento} progress={secao.planta?.progresso} variant={secao.planta?.id ?? secao.id} size={105} />
       </div>
       <div className="section-card-body">
         <div className="card-title-line">

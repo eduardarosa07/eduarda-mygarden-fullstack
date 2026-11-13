@@ -2,6 +2,7 @@ import type { EstagioCrescimento } from '../types'
 
 type Props = {
   stage?: EstagioCrescimento
+  progress?: number
   size?: number
   variant?: number
 }
@@ -13,6 +14,16 @@ const levels: Record<EstagioCrescimento, number> = {
   PLANTA_MEDIA: 3,
   PLANTA_GRANDE: 4,
   FLORESCIMENTO: 5,
+}
+
+function stageFromProgress(progress?: number): EstagioCrescimento | undefined {
+  if (progress === undefined || progress === null || Number.isNaN(progress)) return undefined
+  if (progress <= 0) return 'SEMENTE'
+  if (progress <= 25) return 'BROTO'
+  if (progress <= 50) return 'PLANTA_PEQUENA'
+  if (progress <= 75) return 'PLANTA_MEDIA'
+  if (progress <= 99) return 'PLANTA_GRANDE'
+  return 'FLORESCIMENTO'
 }
 
 function LeafyPlant({ level }: { level: number }) {
@@ -113,17 +124,21 @@ function HerbPlant({ level }: { level: number }) {
   )
 }
 
-export default function PlantIllustration({ stage = 'SEMENTE', size = 110, variant = 0 }: Props) {
-  const level = levels[stage]
+export default function PlantIllustration({ stage = 'SEMENTE', progress, size = 110, variant = 0 }: Props) {
+  // O progresso funciona como uma segunda garantia: se a API informar 100%,
+  // a ilustração sempre mostra o estágio final, mesmo que o estágio recebido esteja desatualizado.
+  const effectiveStage = stageFromProgress(progress) ?? stage
+  const level = levels[effectiveStage]
   const species = Math.abs(variant) % 5
+  const complete = effectiveStage === 'FLORESCIMENTO'
 
   return (
     <svg
-      className={`plant-illustration plant-variant-${species}`}
+      className={`plant-illustration plant-variant-${species}${complete ? ' is-complete' : ''}`}
       viewBox="0 0 120 120"
       width={size}
       height={size}
-      aria-label={`Estágio ${stage.toLowerCase().replaceAll('_', ' ')}`}
+      aria-label={`Estágio ${effectiveStage.toLowerCase().replaceAll('_', ' ')}`}
       role="img"
     >
       <path d="M42 89h36l-4 19H46z" className="plant-pot" />
@@ -134,13 +149,13 @@ export default function PlantIllustration({ stage = 'SEMENTE', size = 110, varia
           <path d="M55 79c2-5 8-5 11 0-3 4-8 4-11 0Z" className="plant-seed" />
         </>
       ) : (
-        <>
+        <g className="plant-growth">
           {species === 0 && <LeafyPlant level={level} />}
           {species === 1 && <DaisyPlant level={level} />}
           {species === 2 && <SucculentPlant level={level} />}
           {species === 3 && <TulipPlant level={level} />}
           {species === 4 && <HerbPlant level={level} />}
-        </>
+        </g>
       )}
     </svg>
   )
